@@ -6485,6 +6485,32 @@
 			}
 		});
 	</script>
+	<script>
+		// Pastikan lagu menyala setelah klik Buka Undangan (cadangan bila handler bawaan gagal)
+		(function () {
+			function startSong() {
+				try {
+					var s = document.getElementById('song');
+					if (!s) return;
+					if (typeof window.playAudio === 'function') { window.playAudio(); return; }
+					var p = s.play();
+					if (p && typeof p.catch === 'function') { p.catch(function () {}); }
+					if (typeof window.audioActive === 'function') { window.audioActive(); }
+				} catch (e) {}
+			}
+			function bindOpen() {
+				var b = document.getElementById('btn_open');
+				if (b && !b.dataset.songBound) {
+					b.dataset.songBound = '1';
+					b.addEventListener('click', function () { setTimeout(startSong, 300); });
+				}
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', bindOpen);
+			} else { bindOpen(); }
+			setTimeout(bindOpen, 2000);
+		})();
+	</script>
 	<script defer
 		src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496"
 		integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ=="
